@@ -4,10 +4,18 @@ Using an example rate of 100 requests per minute, a safe implementation would be
 request every 0.6 seconds using a `time.Ticker` (make a request, wait 0.6 seconds). However, we
 chose something a little more complex (but not too complex) for more flexibility.
 
-# The chosen rate limiter and parameters used
+# The chosen rate limiter
 
 The https://pkg.go.dev/golang.org/x/time/rate#Limiter from `golang.org/x/time/rate` is a good fit,
 and implements the Token Bucket algorithm: https://en.wikipedia.org/wiki/Token_bucket.
+
+**How to use:**
+
+1. Instantiate `limiter := rate.NewLimiter(rate, burst)`, and share between goroutines
+2. Before a rate-limited operation (like an outgoing API call), call `limiter.Wait(ctx)`
+    * Note: the `limiter` is thread-safe
+
+# Technical details and reasoning for parameters used
 
 A `time.Ticker`'s primary drawback, as described in https://pkg.go.dev/time@go1.22.2#NewTicker:
 
